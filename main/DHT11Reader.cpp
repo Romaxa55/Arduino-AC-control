@@ -1,9 +1,7 @@
 #include "DHT11Reader.h"
 
 // Конструктор с инициализацией датчика
-DHT11Reader::DHT11Reader(uint8_t pin) : dht11(pin), temperature(0), humidity(0) {
-    // В библиотеке DHT11 нет метода begin, поэтому просто создаем экземпляр
-}
+DHT11Reader::DHT11Reader(uint8_t pin) : dht11(pin), temperature(0), humidity(0) {}
 
 // Приватный метод для чтения данных с датчика
 bool DHT11Reader::readData() {
@@ -14,12 +12,12 @@ bool DHT11Reader::readData() {
 // Метод для вывода данных в Serial
 void DHT11Reader::printData() {
     if (readData()) {
-        Serial.print("Temperature: ");
+        Serial.print(F("Temperature: "));
         Serial.print(temperature);
-        Serial.print(" °C\tHumidity: ");
+        Serial.print(F(" °C\tHumidity: "));
         Serial.print(humidity);
-        Serial.println(" %");
+        Serial.println(F(" %"));
     } else {
-        Serial.println("Failed to read from DHT11 sensor.");
+        Serial.println(F("Failed to read from DHT11 sensor."));
     }
 }

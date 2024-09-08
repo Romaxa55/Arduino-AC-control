@@ -14,8 +14,8 @@ public:
 
 private:
     DHT11 dht11; // Экземпляр датчика
-    int temperature;
-    int humidity;
+    int temperature; // Используем int, так как метод библиотеки требует int
+    int humidity;    // Используем int, так как метод библиотеки требует int
 
     // Приватный метод для чтения данных с датчика
     bool readData();
