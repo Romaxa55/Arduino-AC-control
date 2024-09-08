@@ -1,4 +1,4 @@
-#include "DHTModule.h"
+#include "DHT/DHTModule.h"
 
 #define DHTPIN 2      // Пин, к которому подключен DHT11
 #define DHTTYPE DHT11 // Тип датчика DHT11

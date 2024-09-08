@@ -1,7 +1,7 @@
 #ifndef DHTMODULE_H
 #define DHTMODULE_H
 
-#include <DHT.h>
+#include <DHT11.h>
 
 class DHTModule {
 public:
