@@ -1,13 +1,16 @@
 #include "DHT11Reader.h"
 #include <avr/power.h> // Подключаем библиотеку для управления тактовой частотой
-#include "config.h"  // Подключаем заголовочный файл с определением DEBUG
+#include "config.h"
+#include "ErrorIndicator.h"
 
 #define LED_PIN 13         // Встроенный светодиод на плате Arduino
 #define DHT_DATA_PIN 2     // Пин данных DHT11
 #define DHT_POWER_PIN 7    // Пин управления питанием DHT11
 #define BOD 9600    // Скорость серийного порта
 
+CustomArduino arduino;
 DHT11Reader dhtReader(DHT_DATA_PIN, DHT_POWER_PIN); // Создаем объект класса с указанием пинов
+ErrorIndicator errorIndicator(LED_PIN); // Создаем объект для управления ошибками
 
 void setup() {
     // Устанавливаем пониженную тактовую частоту для экономии энергии
@@ -15,7 +18,7 @@ void setup() {
 
 #ifdef DEBUG
     Serial.begin(BOD);  // Устанавливаем более низкую скорость передачи данных, соответствующую пониженной частоте
-    delay(100);  // Небольшая задержка для стабилизации перед инициализацией Serial
+    arduino.delay(100);  // Небольшая задержка для стабилизации перед инициализацией Serial
     Serial.println("Setup complete. Start app."); // Выводим сообщение о завершении setup
 #endif
 
@@ -24,19 +27,29 @@ void setup() {
 
     dhtReader.disableModules(); // Отключаем ненужные модули для экономии энергии
     dhtReader.initialize(); // Инициализируем датчик
-    delay(200);  // Задержка для завершения инициализации
+    arduino.delay(200);
+
+    // Проверка доступности датчика
+    if (!dhtReader.isSensorAvailable()) {
+        errorIndicator.setError(SENSOR_ERROR); // Устанавливаем ошибку датчика, если он недоступен
+    }
+    arduino.delay(200);  // Задержка для завершения инициализации
 }
 
 void loop() {
 #ifdef DEBUG
     Serial.println("Start app");
 #endif
+    // Тестируем индикатор ошибок
+    errorIndicator.blinkSensorError(); // Проверка индикации "нет ошибки"
+    arduino.delay(2000);  // Задержка между тестами
+
     dhtReader.readAndPrintData(); // Читаем и выводим данные с датчика
 
 #ifdef DEBUG
     Serial.println("Going to sleep...");
 #endif
-    delay(1000);  // Задержка перед сном
+    arduino.delay(1000);  // Задержка перед сном
 
     dhtReader.enterSleepMode();  // Переходим в режим сна (и затем произойдет сброс)
 }

@@ -14,7 +14,7 @@ DHT11Reader::DHT11Reader(uint8_t dataPin, uint8_t powerPin)
 void DHT11Reader::initialize() {
     Serial.println("Initializing DHT11 sensor...");
     powerOn();
-    delay(200); // Ждем 0.2 секунды для стабилизации датчика
+    arduino.delay(200); // Ждем 0.2 секунды для стабилизации датчика
 
     int result = dht11.readTemperatureHumidity(temperature, humidity);
     if (result == 0) {
@@ -30,7 +30,7 @@ void DHT11Reader::initialize() {
 // Метод для включения питания датчика
 void DHT11Reader::powerOn() {
     digitalWrite(powerPin, HIGH); // Включаем питание
-    delay(200); // Ждем 0.2 секунды для стабилизации датчика
+    arduino.delay(200); // Ждем 0.2 секунды для стабилизации датчика
 }
 
 // Метод для отключения питания датчика
@@ -46,7 +46,7 @@ bool DHT11Reader::readData() {
     }
 
     powerOn(); // Включаем питание перед считыванием данных
-    delay(2000); // Ждем 2 секунды для стабилизации перед чтением
+    arduino.delay(2000); // Ждем 2 секунды для стабилизации перед чтением
 
     int result = dht11.readTemperatureHumidity(temperature, humidity);
     powerOff(); // Отключаем питание после считывания данных
@@ -78,7 +78,7 @@ void DHT11Reader::readAndPrintData() {
 // Метод для перехода в режим сна
 void DHT11Reader::enterSleepMode() {
     Serial.println("Entering sleep mode...");
-    delay(500);
+    arduino.delay(500);
 
     // Настраиваем Watchdog Timer для пробуждения
     wdt_enable(SLEEP_DURATION); // Устанавливаем время сна
@@ -100,4 +100,8 @@ void DHT11Reader::disableModules() {
 
     power_timer1_disable(); // Отключаем таймеры, если они не нужны
     power_timer2_disable();
+}
+
+bool DHT11Reader::isSensorAvailable() {
+    return sensorAvailable;
 }

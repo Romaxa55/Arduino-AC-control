@@ -25,6 +25,8 @@ public:
     // Метод для отключения неиспользуемых модулей
     void disableModules();
 
+    bool isSensorAvailable(); // Метод для проверки доступности датчика
+
 private:
     DHT11 dht11;  // Экземпляр датчика
     int temperature;
