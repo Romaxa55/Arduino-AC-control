@@ -1,25 +1,14 @@
-#include "DHT/DHTModule.h"
+#include "DHT11Reader.h"
 
-#define DHTPIN 2      // Пин, к которому подключен DHT11
-#define DHTTYPE DHT11 // Тип датчика DHT11
+#define DHT11_PIN 2 // Пин, к которому подключен датчик DHT11
 
-DHTModule dhtModule(DHTPIN, DHTTYPE);
+DHT11Reader dhtReader(DHT11_PIN); // Создаем объект класса с инициализацией
 
 void setup() {
-    Serial.begin(9600);
-    dhtModule.begin();
+    Serial.begin(9600); // Инициализируем сериальный порт
 }
 
 void loop() {
-    float temp = dhtModule.readTemperature();
-    float humidity = dhtModule.readHumidity();
-
-    Serial.print("Temperature: ");
-    Serial.print(temp);
-    Serial.print(" °C ");
-    Serial.print("Humidity: ");
-    Serial.print(humidity);
-    Serial.println(" %");
-
+    dhtReader.printData(); // Вызываем метод для чтения и вывода данных
     delay(2000); // Задержка между измерениями
 }
