@@ -2,44 +2,39 @@
 #define DHT11READER_H
 
 #include <Arduino.h>
-#include <DHT11.h>  // Библиотека для работы с датчиком DHT11
-#include "config.h"  // Подключаем заголовочный файл с определением DEBUG
+#include <DHT11.h>  // Используем библиотеку для работы с DHT11
+#include "config.h"
 #include <avr/sleep.h>
 #include <avr/power.h>
 #include <avr/wdt.h>  // Подключаем библиотеку для работы с Watchdog Timer
 
 class DHT11Reader {
 public:
-    // Конструктор с инициализацией датчика и управления питанием
     DHT11Reader(uint8_t dataPin, uint8_t powerPin);
-
-    // Метод для инициализации датчика
     void initialize();
-
-    // Метод для получения и вывода температуры и влажности
+    bool isSensorAvailable();
     void readAndPrintData();
-
-    // Метод для перехода в режим сна
     void enterSleepMode();
-
-    // Метод для отключения неиспользуемых модулей
     void disableModules();
+    bool sensorAvailable;
 
-    bool isSensorAvailable(); // Метод для проверки доступности датчика
+    // Геттеры для получения температуры и влажности
+    int getTemperature() const;
+    int getHumidity() const;
+
+    // Сеттеры для установки температуры и влажности
+    void setTemperature(int temp);
+    void setHumidity(int hum);
+
 
 private:
-    DHT11 dht11;  // Экземпляр датчика
+    DHT11 dht11;  // Объект библиотеки DHT11 для работы с датчиком
     int temperature;
     int humidity;
-    uint8_t powerPin;  // Пин для управления питанием датчика
-    bool sensorAvailable; // Флаг для проверки доступности датчика
-
-    // Приватный метод для чтения данных с датчика
-    bool readData();
-
-    // Приватные методы для включения и отключения питания датчика
+    uint8_t powerPin;
     void powerOn();
     void powerOff();
+    bool readData();
 };
 
 #endif // DHT11READER_H

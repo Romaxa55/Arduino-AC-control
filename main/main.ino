@@ -4,8 +4,8 @@
 #include "ErrorIndicator.h"
 
 #define LED_PIN 13         // Встроенный светодиод на плате Arduino
-#define DHT_DATA_PIN 2     // Пин данных DHT11
-#define DHT_POWER_PIN 7    // Пин управления питанием DHT11
+#define DHT_DATA_PIN 3     // Пин данных DHT11
+#define DHT_POWER_PIN 2    // Пин управления питанием DHT11
 #define BOD 9600    // Скорость серийного порта
 
 CustomArduino arduino;
@@ -14,7 +14,7 @@ ErrorIndicator errorIndicator(LED_PIN); // Создаем объект для у
 
 void setup() {
     // Устанавливаем пониженную тактовую частоту для экономии энергии
-    clock_prescale_set(clock_div_8); // Устанавливаем тактовую частоту в 1/8 от стандартной (2 МГц вместо 16 МГц)
+//    clock_prescale_set(clock_div_8); // Устанавливаем тактовую частоту в 1/8 от стандартной (2 МГц вместо 16 МГц)
 
 #ifdef DEBUG
     Serial.begin(BOD);  // Устанавливаем более низкую скорость передачи данных, соответствующую пониженной частоте
@@ -40,16 +40,12 @@ void loop() {
 #ifdef DEBUG
     Serial.println("Start app");
 #endif
-    // Тестируем индикатор ошибок
-    errorIndicator.blinkSensorError(); // Проверка индикации "нет ошибки"
-    arduino.delay(2000);  // Задержка между тестами
-
     dhtReader.readAndPrintData(); // Читаем и выводим данные с датчика
 
 #ifdef DEBUG
     Serial.println("Going to sleep...");
 #endif
-    arduino.delay(1000);  // Задержка перед сном
+    arduino.delay(200);  // Задержка перед сном
 
     dhtReader.enterSleepMode();  // Переходим в режим сна (и затем произойдет сброс)
 }

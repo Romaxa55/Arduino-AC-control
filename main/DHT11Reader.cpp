@@ -14,10 +14,9 @@ DHT11Reader::DHT11Reader(uint8_t dataPin, uint8_t powerPin)
 void DHT11Reader::initialize() {
     Serial.println("Initializing DHT11 sensor...");
     powerOn();
-    arduino.delay(200); // Ждем 0.2 секунды для стабилизации датчика
+    delay(200); // Ждем 200 мс для стабилизации датчика
 
-    int result = dht11.readTemperatureHumidity(temperature, humidity);
-    if (result == 0) {
+    if (readData()) {
         sensorAvailable = true; // Если чтение успешно, датчик доступен
         Serial.println("DHT11 sensor initialized successfully.");
     } else {
@@ -30,7 +29,7 @@ void DHT11Reader::initialize() {
 // Метод для включения питания датчика
 void DHT11Reader::powerOn() {
     digitalWrite(powerPin, HIGH); // Включаем питание
-    arduino.delay(200); // Ждем 0.2 секунды для стабилизации датчика
+    delay(200); // Ждем 200 мс для стабилизации датчика
 }
 
 // Метод для отключения питания датчика
@@ -39,14 +38,10 @@ void DHT11Reader::powerOff() {
 }
 
 // Приватный метод для чтения данных с датчика
+// Приватный метод для чтения данных с датчика
 bool DHT11Reader::readData() {
-    if (!sensorAvailable) { // Если датчик недоступен, сразу возвращаем false
-        Serial.println("DHT11 sensor is not available.");
-        return false;
-    }
-
     powerOn(); // Включаем питание перед считыванием данных
-    arduino.delay(2000); // Ждем 2 секунды для стабилизации перед чтением
+    delay(2000); // Ждем 2 секунды для стабилизации перед чтением
 
     int result = dht11.readTemperatureHumidity(temperature, humidity);
     powerOff(); // Отключаем питание после считывания данных
@@ -55,6 +50,16 @@ bool DHT11Reader::readData() {
         Serial.println("Failed to read from DHT11 sensor.");
         return false; // Возвращаем false, если чтение не удалось
     }
+
+    // Применяем калибровку температуры
+    temperature -= 5;
+
+    Serial.print("Temperature (corrected): ");
+    Serial.print(temperature);
+    Serial.print(" °C, Humidity: ");
+    Serial.print(humidity);
+    Serial.println(" %");
+
     return true; // Возвращаем true, если чтение успешно
 }
 
@@ -62,34 +67,29 @@ bool DHT11Reader::readData() {
 void DHT11Reader::readAndPrintData() {
     if (!sensorAvailable) { // Проверяем, доступен ли датчик
         Serial.println("Skipping data read; sensor is not available.");
-        return; // Прекращаем выполнение функции, если датчик недоступен
+        return;
     }
 
     Serial.println("Reading data from DHT11...");
-    if (readData()) {
-        Serial.print("Temperature: ");
-        Serial.print(temperature);
-        Serial.print(" °C\tHumidity: ");
-        Serial.print(humidity);
-        Serial.println(" %");
+    if (!readData()) {
+        Serial.println("Error reading data from DHT11.");
     }
 }
 
 // Метод для перехода в режим сна
 void DHT11Reader::enterSleepMode() {
     Serial.println("Entering sleep mode...");
-    arduino.delay(500);
+    delay(500); // Ждем 500 мс перед входом в режим сна
 
     // Настраиваем Watchdog Timer для пробуждения
     wdt_enable(SLEEP_DURATION); // Устанавливаем время сна
 
     set_sleep_mode(SLEEP_MODE_PWR_DOWN);  // Используем режим максимального энергосбережения
-    sleep_enable();                   // Разрешаем режим сна
+    sleep_enable(); // Разрешаем режим сна
 
-    noInterrupts();  // Отключаем прерывания для безопасного входа в режим сна
-    sleep_cpu();     // Переводим микроконтроллер в режим сна
+    noInterrupts(); // Отключаем прерывания для безопасного входа в режим сна
+    sleep_cpu(); // Переводим микроконтроллер в режим сна
 }
-
 
 // Метод для отключения неиспользуемых модулей
 void DHT11Reader::disableModules() {
@@ -102,6 +102,26 @@ void DHT11Reader::disableModules() {
     power_timer2_disable();
 }
 
+// Геттеры для получения температуры и влажности
+int DHT11Reader::getTemperature() const {
+    return temperature;
+}
+
+int DHT11Reader::getHumidity() const {
+    return humidity;
+}
+
+// Сеттеры для установки температуры и влажности (если нужно)
+void DHT11Reader::setTemperature(int temp) {
+    temperature = temp;
+}
+
+void DHT11Reader::setHumidity(int hum) {
+    humidity = hum;
+}
+
+// Метод для проверки доступности датчика
 bool DHT11Reader::isSensorAvailable() {
     return sensorAvailable;
 }
+

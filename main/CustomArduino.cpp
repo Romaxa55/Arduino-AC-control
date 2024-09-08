@@ -11,14 +11,6 @@ void CustomArduino::delay(unsigned long ms) {
 #ifdef USE_CUSTOM_DELAY  // Используем кастомную задержку, если макрос определен
     unsigned long adjustedMs = ms / delayCorrectionFactor; // Делим задержку на 8
 
-    // Отладочный вывод
-    Serial.print("Using custom delay... ");
-    Serial.print("Original delay: ");
-    Serial.print(ms);
-    Serial.print(" ms, Adjusted delay: ");
-    Serial.print(adjustedMs);
-    Serial.println(" ms");
-
     // Цикл по миллисекундам
     for (unsigned long i = 0; i < adjustedMs; i++) {
         unsigned long start = micros();
