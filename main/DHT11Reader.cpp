@@ -2,7 +2,6 @@
 #include "config.h"
 #include <avr/wdt.h>
 
-// Конструктор класса DHT11Reader
 DHT11Reader::DHT11Reader(uint8_t dataPin, uint8_t powerPin)
 : dht11(dataPin), temperature(0), humidity(0), powerPin(powerPin), lastReadTime(0) {
     pinMode(powerPin, OUTPUT);  // Устанавливаем пин управления питанием как выход
@@ -10,7 +9,6 @@ DHT11Reader::DHT11Reader(uint8_t dataPin, uint8_t powerPin)
     flags.sensorAvailable = false; // Инициализируем флаг доступности датчика
 }
 
-// Метод инициализации датчика DHT11
 void DHT11Reader::initialize() {
     DEBUG_PRINT(F("Initializing DHT11 sensor..."));
     managePower(true); // Включаем питание датчика
@@ -26,13 +24,11 @@ void DHT11Reader::initialize() {
     managePower(false); // Отключаем питание датчика
 }
 
-// Метод управления питанием датчика с использованием битовых операций
 void DHT11Reader::managePower(bool on) {
     digitalWrite(powerPin, on ? HIGH : LOW);
     if (on) _delay_ms(200); // Задержка после включения питания
 }
 
-// Метод запуска процесса опроса датчика
 void DHT11Reader::run() {
     unsigned long currentMillis = millis();
     if (currentMillis - lastReadTime >= readInterval) {
@@ -44,7 +40,6 @@ void DHT11Reader::run() {
     }
 }
 
-// Метод чтения данных с датчика
 bool DHT11Reader::readData() {
     managePower(true); // Включаем питание датчика
     _delay_ms(2000); // Ждем стабилизации
@@ -71,16 +66,25 @@ bool DHT11Reader::readData() {
     return true;
 }
 
+// Метод отключения всех неиспользуемых модулей
 void DHT11Reader::disableModules() {
+    // Отключаем аналогово-цифровой преобразователь (ADC)
     ADCSRA &= ~(1 << ADEN);
 
+    // Отключаем SPI
     power_spi_disable();
+
+    // Отключаем I2C (TWI)
     power_twi_disable();
 
+    // Отключаем таймеры, которые не используются
+    // power_timer0_disable(); // Если таймер 0 не используется (например, для millis или delay)
     power_timer1_disable();
     power_timer2_disable();
-}
 
-int DHT11Reader::getTemperature() const { return temperature; }
-int DHT11Reader::getHumidity() const { return humidity; }
-bool DHT11Reader::isSensorAvailable() const { return flags.sensorAvailable; }
+    // Отключаем последовательный порт (USART), если он не используется
+    // power_usart0_disable();
+
+    // Отключаем АЦП (аналого-цифровой преобразователь), если он не используется
+    power_adc_disable();
+}
