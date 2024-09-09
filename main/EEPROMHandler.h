@@ -18,7 +18,7 @@ private:
 
     // Вспомогательные функции для сдвигов
     inline uint8_t getLowByte(uint16_t value) const { return value & 0xFF; } // Возвращаем младший байт
-    inline uint8_t getHighByte(uint16_t value) const { return (value >> 8) & 0xFF; } // Возвращаем старший байт
+    inline uint8_t getHighByte(uint16_t value) const { return value >> 8; }  // Возвращаем старший байт
 };
 
 #endif // EEPROMHANDLER_H

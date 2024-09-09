@@ -16,87 +16,40 @@ void ErrorIndicator::setError(ErrorType errorType) {
 void ErrorIndicator::indicateError() {
     switch (currentError) {
         case NO_ERROR:
-            blinkNoError();
+            blink(1, 0, 30, 200, 0, 800);  // Один короткий всплеск повторяется каждую секунду в течение 30 секунд
             break;
         case SENSOR_ERROR:
-            blinkSensorError();
+            blink(0, 5, 3, 0, 1000, 4000); // 5 длинных вспышек, повторяем каждую серию через 5 секунд
             break;
         case INITIALIZATION_ERROR:
-            blinkInitializationError();
+            blink(3, 3, 3, 200, 1000, 3000); // Ошибка инициализации: 3 коротких, 3 длинных, 3 коротких
             break;
         case SLEEP_ERROR:
-            blinkSleepError();
+            blink(2, 2, 5, 200, 1000, 200); // Ошибка сна: 2 длинных, 2 коротких, 1 длинная
             break;
     }
 }
 
-// Приватные методы для мигания в зависимости от типа ошибки
-void ErrorIndicator::blinkNoError() {
-    // Один короткий всплеск повторяется каждую секунду в течение 30 секунд
-    for (int i = 0; i < 30; i++) {
-        digitalWrite(ledPin, HIGH);
-        delay(200); // Короткая вспышка - 0.2 секунды
-        digitalWrite(ledPin, LOW);
-        delay(800); // Интервал до следующего мигания - 0.8 секунды
-    }
-}
+// Оптимизированная универсальная функция для мигания с использованием битовых сдвигов
+void ErrorIndicator::blink(uint8_t shortBlinks, uint8_t longBlinks, uint8_t repeats, uint16_t shortDelay, uint16_t longDelay, uint16_t pauseDelay) {
+uint8_t shortDelayShifted = shortDelay >> 1; // Оптимизация: использование битового сдвига для деления задержки на 2
+uint8_t longDelayShifted = longDelay >> 1;   // Оптимизация: деление на 2 с помощью битового сдвига
 
-void ErrorIndicator::blinkSensorError() {
-    // Сенсорная ошибка: 5 длинных вспышек, повторяем каждую серию через 5 секунд
-    for (int repeat = 0; repeat < 3; repeat++) { // 3 серии по 5 вспышек (3 * 10 секунд = 30 секунд)
-        for (int i = 0; i < 5; i++) {
-            digitalWrite(ledPin, HIGH);
-            delay(1000);   // Длинная вспышка - 1 секунда
-            digitalWrite(ledPin, LOW);
-            delay(200);   // Интервал между вспышками - 0.2 секунды
-        }
-        delay(4000); // Пауза перед следующей серией - 4 секунды
-    }
+for (uint8_t repeat = 0; repeat < repeats; ++repeat) {
+// Короткие вспышки
+for (uint8_t i = 0; i < shortBlinks; ++i) {
+digitalWrite(ledPin, HIGH);
+delay(shortDelayShifted << 1);  // Восстанавливаем оригинальное значение сдвигом влево
+digitalWrite(ledPin, LOW);
+delay(shortDelayShifted << 1);  // Восстанавливаем оригинальное значение сдвигом влево
 }
-
-void ErrorIndicator::blinkInitializationError() {
-    // Ошибка инициализации: 3 коротких, 3 длинных, 3 коротких (повторяем каждую серию каждые 10 секунд)
-    for (int repeat = 0; repeat < 3; repeat++) { // 3 серии по 10 секунд (3 * 10 секунд = 30 секунд)
-        for (int i = 0; i < 3; i++) {
-            digitalWrite(ledPin, HIGH);
-            delay(200);  // Короткая вспышка - 0.2 секунды
-            digitalWrite(ledPin, LOW);
-            delay(200);  // Интервал между вспышками - 0.2 секунды
-        }
-        for (int i = 0; i < 3; i++) {
-            digitalWrite(ledPin, HIGH);
-            delay(1000);  // Длинная вспышка - 1 секунда
-            digitalWrite(ledPin, LOW);
-            delay(200);   // Интервал между вспышками - 0.2 секунды
-        }
-        for (int i = 0; i < 3; i++) {
-            digitalWrite(ledPin, HIGH);
-            delay(200);  // Короткая вспышка - 0.2 секунды
-            digitalWrite(ledPin, LOW);
-            delay(200);  // Интервал между вспышками - 0.2 секунды
-        }
-        delay(3000); // Пауза перед следующей серией - 3 секунды
-    }
+// Длинные вспышки
+for (uint8_t i = 0; i < longBlinks; ++i) {
+digitalWrite(ledPin, HIGH);
+delay(longDelayShifted << 1);   // Восстанавливаем оригинальное значение сдвигом влево
+digitalWrite(ledPin, LOW);
+delay(shortDelayShifted << 1);  // Восстанавливаем оригинальное значение сдвигом влево
 }
-
-void ErrorIndicator::blinkSleepError() {
-    // Ошибка сна: 2 длинных, 2 коротких, 1 длинная, повторяем каждую серию каждые 6 секунд
-    for (int repeat = 0; repeat < 5; repeat++) { // 5 серий по 6 секунд (5 * 6 секунд = 30 секунд)
-        for (int i = 0; i < 2; i++) {
-            digitalWrite(ledPin, HIGH);
-            delay(1000);  // Длинная вспышка - 1 секунда
-            digitalWrite(ledPin, LOW);
-            delay(200);   // Интервал между вспышками - 0.2 секунды
-        }
-        for (int i = 0; i < 2; i++) {
-            digitalWrite(ledPin, HIGH);
-            delay(200);   // Короткая вспышка - 0.2 секунды
-            digitalWrite(ledPin, LOW);
-            delay(200);   // Интервал между вспышками - 0.2 секунды
-        }
-        digitalWrite(ledPin, HIGH);
-        delay(1000);  // Одна длинная вспышка - 1 секунда
-        digitalWrite(ledPin, LOW);
-        delay(1000); // Пауза перед повторением - 1 секунда
-    }
+delay(pauseDelay); // Пауза перед следующей серией миганий
+}
 }
