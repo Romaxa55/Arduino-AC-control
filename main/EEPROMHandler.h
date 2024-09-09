@@ -6,15 +6,19 @@
 
 class EEPROMHandler {
 public:
-    EEPROMHandler(int startAddress);
+    EEPROMHandler(uint8_t startAddress);
 
-    void saveSignal(uint16_t* signal, int length);
-    void readSignal(uint16_t* buffer, int length);
-    void printEEPROM();
-    void clearEEPROM(); // Метод для очистки EEPROM
+    void saveSignal(const uint16_t* signal, uint8_t length);
+    void readSignal(uint16_t* buffer, uint8_t length);
+    void printEEPROM() const;
+    void clearEEPROM();
 
 private:
-    int eepromAddress; // Начальный адрес для хранения данных в EEPROM
+    uint8_t eepromAddress; // Адрес EEPROM для хранения данных
+
+    // Вспомогательные функции для сдвигов
+    inline uint8_t getLowByte(uint16_t value) const { return value & 0xFF; } // Возвращаем младший байт
+    inline uint8_t getHighByte(uint16_t value) const { return (value >> 8) & 0xFF; } // Возвращаем старший байт
 };
 
 #endif // EEPROMHANDLER_H

@@ -34,7 +34,7 @@ void setup() {
     }
 
     // Проверяем память
-    // eepromHandler.printEEPROM();
+    eepromHandler.printEEPROM();
 
     delay(200);  // Задержка для завершения инициализации
 }
