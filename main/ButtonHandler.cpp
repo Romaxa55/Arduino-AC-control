@@ -57,12 +57,9 @@ void ButtonHandler::indicatePressDuration(uint32_t currentMillis) {
         rgbLed.green();
     } else if (pressDuration >= 5000 && pressDuration < 10000) {
         rgbLed.off();
-        for (uint8_t i = 0; i < 3; i++) {
-            rgbLed.blue();
-            delay(100);
-            rgbLed.off();
-            delay(100);
-        }
+        rgbLed.blue();
+        delay(300);  // Уменьшение количества вызовов и улучшение читаемости
+        rgbLed.off();
     } else if (pressDuration >= 10000) {
         rgbLed.red();
     }
@@ -75,9 +72,6 @@ void ButtonHandler::handleShortPress() {
     rgbLed.green();
     delay(50);
     rgbLed.off();
-#ifdef DEBUG
-    Serial.println(F("Short press handled: green LED turned off."));
-#endif
 }
 
 void ButtonHandler::handleMediumPress() {
@@ -85,19 +79,12 @@ void ButtonHandler::handleMediumPress() {
     Serial.println(F("Handling medium press: entering programming mode."));
 #endif
     uint32_t startMillis = millis();
-    uint32_t currentMillis = millis();
-
-    while (currentMillis - startMillis < 30000) {
+    while (millis() - startMillis < 30000) {
         rgbLed.blue();
         delay(500);
         rgbLed.off();
         delay(500);
-        currentMillis = millis();
     }
-
-#ifdef DEBUG
-    Serial.println(F("Exiting programming mode."));
-#endif
 }
 
 void ButtonHandler::handleLongPress() {
@@ -105,24 +92,14 @@ void ButtonHandler::handleLongPress() {
     Serial.println(F("Handling long press: clearing EEPROM and cycling through LEDs."));
 #endif
 
-    indicateStartOfClearing();
-    eepromHandler.clearEEPROM();
-    indicateClearingCompleted();
-
-    resetDevice();
-}
-
-void ButtonHandler::indicateStartOfClearing() {
     rgbLed.red();
-}
-
-void ButtonHandler::indicateClearingCompleted() {
+    eepromHandler.clearEEPROM();
     rgbLed.blue();
     delay(1000);
     rgbLed.white();
     delay(3000);
     rgbLed.off();
-    delay(300);
+    resetDevice();
 }
 
 void ButtonHandler::resetDevice() {

@@ -11,7 +11,7 @@ public:
 private:
     uint8_t buttonPin;
     uint32_t buttonPressTime;
-    uint8_t buttonPressed : 1; // Используем битовые поля для экономии памяти
+    uint8_t buttonPressed : 1;
     uint8_t actionTriggered : 1;
 
     uint32_t lastDebounceTime;
@@ -21,8 +21,6 @@ private:
     void handleShortPress();
     void handleMediumPress();
     void handleLongPress();
-    void indicateStartOfClearing();
-    void indicateClearingCompleted();
     void resetDevice();
 };
 
