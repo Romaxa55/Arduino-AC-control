@@ -1,116 +1,108 @@
 #include "ButtonHandler.h"
-#include "config.h"  // Подключаем конфигурационный файл для доступа к глобальным объектам
-#include <avr/wdt.h> // Подключаем библиотеку для работы с Watchdog Timer
+#include "config.h"
+#include <avr/wdt.h>
 
 ButtonHandler::ButtonHandler(uint8_t pin)
-        : buttonPin(pin), buttonPressTime(0), buttonPressed(false), actionTriggered(false),
-          lastDebounceTime(0), debounceDelay(50) { // Устанавливаем задержку для устранения дребезга
-    pinMode(buttonPin, INPUT_PULLUP); // Настраиваем кнопку на вход с подтяжкой к питанию
+        : buttonPin(pin), buttonPressTime(0), buttonPressed(0), actionTriggered(0),
+          lastDebounceTime(0), debounceDelay(50) {
+    pinMode(buttonPin, INPUT_PULLUP);
 }
 
 void ButtonHandler::update() {
-    unsigned long currentMillis = millis();
+    uint32_t currentMillis = millis();
 
-    if (digitalRead(buttonPin) == LOW) { // Кнопка нажата
-        if (!buttonPressed) { // Начало нажатия
-            buttonPressed = true;
-            buttonPressTime = currentMillis; // Записываем время начала нажатия
-            actionTriggered = false; // Сбрасываем флаг выполнения действия
+    if (digitalRead(buttonPin) == LOW) {
+        if (!buttonPressed) {
+            buttonPressed = 1;
+            buttonPressTime = currentMillis;
+            actionTriggered = 0;
 #ifdef DEBUG
-            Serial.println("Button pressed.");
+            Serial.println(F("Button pressed."));
 #endif
         }
 
-        // Индикация времени нажатия кнопки
         indicatePressDuration(currentMillis);
 
-    } else { // Кнопка отпущена
-        if (buttonPressed) { // Если кнопка была нажата, но теперь отпущена
-            unsigned long pressDuration = currentMillis - buttonPressTime;
+    } else {
+        if (buttonPressed) {
+            uint32_t pressDuration = currentMillis - buttonPressTime;
 
-            // Выбираем действие на основе времени удержания кнопки
-            if (pressDuration < 5000 && !actionTriggered) { // Короткое нажатие (меньше 5 секунд)
+            if (pressDuration < 5000 && !actionTriggered) {
 #ifdef DEBUG
-                Serial.println("Short press detected.");
+                Serial.println(F("Short press detected."));
 #endif
                 handleShortPress();
-            } else if (pressDuration >= 5000 && pressDuration < 10000 && !actionTriggered) { // Среднее нажатие
+            } else if (pressDuration >= 5000 && pressDuration < 10000 && !actionTriggered) {
 #ifdef DEBUG
-                Serial.println("Medium press detected.");
+                Serial.println(F("Medium press detected."));
 #endif
                 handleMediumPress();
-            } else if (pressDuration >= 10000 && !actionTriggered) { // Длинное нажатие
+            } else if (pressDuration >= 10000 && !actionTriggered) {
 #ifdef DEBUG
-                Serial.println("Long press detected.");
+                Serial.println(F("Long press detected."));
 #endif
                 handleLongPress();
             }
 
-            buttonPressed = false; // Сбрасываем состояние кнопки
-            actionTriggered = true; // Отмечаем, что действие выполнено
+            buttonPressed = 0;
+            actionTriggered = 1;
         }
     }
 }
 
-void ButtonHandler::indicatePressDuration(unsigned long currentMillis) {
-    unsigned long pressDuration = currentMillis - buttonPressTime;
+void ButtonHandler::indicatePressDuration(uint32_t currentMillis) {
+    uint32_t pressDuration = currentMillis - buttonPressTime;
 
     if (pressDuration < 5000) {
-        // Зеленый светодиод загорается на короткое время
         rgbLed.green();
     } else if (pressDuration >= 5000 && pressDuration < 10000) {
-        // Синий светодиод мигает три раза быстро
         rgbLed.off();
-        for (int i = 0; i < 3; i++) {
+        for (uint8_t i = 0; i < 3; i++) {
             rgbLed.blue();
             delay(100);
             rgbLed.off();
             delay(100);
         }
     } else if (pressDuration >= 10000) {
-        // Красный светодиод загорается на длительное время
         rgbLed.red();
     }
 }
 
 void ButtonHandler::handleShortPress() {
 #ifdef DEBUG
-    Serial.println("Handling short press: turning on green LED.");
+    Serial.println(F("Handling short press: turning on green LED."));
 #endif
-    rgbLed.green(); // Зеленый светодиод загорается
-    delay(50); // Ожидаем 1 секунду
+    rgbLed.green();
+    delay(50);
     rgbLed.off();
 #ifdef DEBUG
-    Serial.println("Short press handled: green LED turned off.");
+    Serial.println(F("Short press handled: green LED turned off."));
 #endif
 }
 
 void ButtonHandler::handleMediumPress() {
 #ifdef DEBUG
-    Serial.println("Handling medium press: entering programming mode.");
+    Serial.println(F("Handling medium press: entering programming mode."));
 #endif
-    unsigned long startMillis = millis();
-    unsigned long currentMillis = millis();
+    uint32_t startMillis = millis();
+    uint32_t currentMillis = millis();
 
-    // Мигание синим светодиодом каждую секунду в течение 30 секунд
-    while (currentMillis - startMillis < 30000) { // 30 секунд
-        rgbLed.blue();  // Включаем синий светодиод
-        delay(500);     // Светодиод горит 0.5 секунды
-        rgbLed.off();   // Выключаем светодиод
-        delay(500);     // Светодиод выключен 0.5 секунды
-
-        currentMillis = millis(); // Обновляем текущее время
+    while (currentMillis - startMillis < 30000) {
+        rgbLed.blue();
+        delay(500);
+        rgbLed.off();
+        delay(500);
+        currentMillis = millis();
     }
 
 #ifdef DEBUG
-    Serial.println("Exiting programming mode.");
+    Serial.println(F("Exiting programming mode."));
 #endif
-    // Здесь можно вставить код для обработки сигналов приемника в будущем
 }
 
 void ButtonHandler::handleLongPress() {
 #ifdef DEBUG
-    Serial.println("Handling long press: clearing EEPROM and cycling through LEDs.");
+    Serial.println(F("Handling long press: clearing EEPROM and cycling through LEDs."));
 #endif
 
     indicateStartOfClearing();
@@ -120,12 +112,10 @@ void ButtonHandler::handleLongPress() {
     resetDevice();
 }
 
-// Метод для индикации начала очистки
 void ButtonHandler::indicateStartOfClearing() {
     rgbLed.red();
 }
 
-// Метод для индикации завершения очистки
 void ButtonHandler::indicateClearingCompleted() {
     rgbLed.blue();
     delay(1000);
@@ -137,8 +127,8 @@ void ButtonHandler::indicateClearingCompleted() {
 
 void ButtonHandler::resetDevice() {
 #ifdef DEBUG
-    Serial.println("Resetting device.");
+    Serial.println(F("Resetting device."));
 #endif
-    wdt_enable(WDTO_15MS); // Включаем сторожевой таймер на 15 миллисекунд
-    while (true);          // Ждем сброса
+    wdt_enable(WDTO_15MS);
+    while (true);
 }

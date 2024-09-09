@@ -35,9 +35,9 @@ void ErrorIndicator::blinkNoError() {
     // Один короткий всплеск повторяется каждую секунду в течение 30 секунд
     for (int i = 0; i < 30; i++) {
         digitalWrite(ledPin, HIGH);
-        arduino.delay(200); // Короткая вспышка - 0.2 секунды
+        delay(200); // Короткая вспышка - 0.2 секунды
         digitalWrite(ledPin, LOW);
-        arduino.delay(800); // Интервал до следующего мигания - 0.8 секунды
+        delay(800); // Интервал до следующего мигания - 0.8 секунды
     }
 }
 
@@ -46,11 +46,11 @@ void ErrorIndicator::blinkSensorError() {
     for (int repeat = 0; repeat < 3; repeat++) { // 3 серии по 5 вспышек (3 * 10 секунд = 30 секунд)
         for (int i = 0; i < 5; i++) {
             digitalWrite(ledPin, HIGH);
-            arduino.delay(1000);   // Длинная вспышка - 1 секунда
+            delay(1000);   // Длинная вспышка - 1 секунда
             digitalWrite(ledPin, LOW);
-            arduino.delay(200);   // Интервал между вспышками - 0.2 секунды
+            delay(200);   // Интервал между вспышками - 0.2 секунды
         }
-        arduino.delay(4000); // Пауза перед следующей серией - 4 секунды
+        delay(4000); // Пауза перед следующей серией - 4 секунды
     }
 }
 
@@ -59,23 +59,23 @@ void ErrorIndicator::blinkInitializationError() {
     for (int repeat = 0; repeat < 3; repeat++) { // 3 серии по 10 секунд (3 * 10 секунд = 30 секунд)
         for (int i = 0; i < 3; i++) {
             digitalWrite(ledPin, HIGH);
-            arduino.delay(200);  // Короткая вспышка - 0.2 секунды
+            delay(200);  // Короткая вспышка - 0.2 секунды
             digitalWrite(ledPin, LOW);
-            arduino.delay(200);  // Интервал между вспышками - 0.2 секунды
+            delay(200);  // Интервал между вспышками - 0.2 секунды
         }
         for (int i = 0; i < 3; i++) {
             digitalWrite(ledPin, HIGH);
-            arduino.delay(1000);  // Длинная вспышка - 1 секунда
+            delay(1000);  // Длинная вспышка - 1 секунда
             digitalWrite(ledPin, LOW);
-            arduino.delay(200);   // Интервал между вспышками - 0.2 секунды
+            delay(200);   // Интервал между вспышками - 0.2 секунды
         }
         for (int i = 0; i < 3; i++) {
             digitalWrite(ledPin, HIGH);
-            arduino.delay(200);  // Короткая вспышка - 0.2 секунды
+            delay(200);  // Короткая вспышка - 0.2 секунды
             digitalWrite(ledPin, LOW);
-            arduino.delay(200);  // Интервал между вспышками - 0.2 секунды
+            delay(200);  // Интервал между вспышками - 0.2 секунды
         }
-        arduino.delay(3000); // Пауза перед следующей серией - 3 секунды
+        delay(3000); // Пауза перед следующей серией - 3 секунды
     }
 }
 
@@ -84,19 +84,19 @@ void ErrorIndicator::blinkSleepError() {
     for (int repeat = 0; repeat < 5; repeat++) { // 5 серий по 6 секунд (5 * 6 секунд = 30 секунд)
         for (int i = 0; i < 2; i++) {
             digitalWrite(ledPin, HIGH);
-            arduino.delay(1000);  // Длинная вспышка - 1 секунда
+            delay(1000);  // Длинная вспышка - 1 секунда
             digitalWrite(ledPin, LOW);
-            arduino.delay(200);   // Интервал между вспышками - 0.2 секунды
+            delay(200);   // Интервал между вспышками - 0.2 секунды
         }
         for (int i = 0; i < 2; i++) {
             digitalWrite(ledPin, HIGH);
-            arduino.delay(200);   // Короткая вспышка - 0.2 секунды
+            delay(200);   // Короткая вспышка - 0.2 секунды
             digitalWrite(ledPin, LOW);
-            arduino.delay(200);   // Интервал между вспышками - 0.2 секунды
+            delay(200);   // Интервал между вспышками - 0.2 секунды
         }
         digitalWrite(ledPin, HIGH);
-        arduino.delay(1000);  // Одна длинная вспышка - 1 секунда
+        delay(1000);  // Одна длинная вспышка - 1 секунда
         digitalWrite(ledPin, LOW);
-        arduino.delay(1000); // Пауза перед повторением - 1 секунда
+        delay(1000); // Пауза перед повторением - 1 секунда
     }
 }

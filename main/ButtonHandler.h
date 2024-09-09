@@ -5,25 +5,25 @@
 
 class ButtonHandler {
 public:
-    ButtonHandler(uint8_t pin); // Конструктор, принимает пин кнопки
-    void update(); // Метод для обновления состояния кнопки и выполнения действий
+    ButtonHandler(uint8_t pin);
+    void update();
 
 private:
-    uint8_t buttonPin; // Пин кнопки
-    unsigned long buttonPressTime; // Время начала нажатия
-    bool buttonPressed; // Состояние кнопки
-    bool actionTriggered; // Флаг выполнения действия
+    uint8_t buttonPin;
+    uint32_t buttonPressTime;
+    uint8_t buttonPressed : 1; // Используем битовые поля для экономии памяти
+    uint8_t actionTriggered : 1;
 
-    unsigned long lastDebounceTime; // Последнее время изменения состояния кнопки
-    unsigned long debounceDelay; // Задержка для устранения дребезга
+    uint32_t lastDebounceTime;
+    uint16_t debounceDelay;
 
-    void indicatePressDuration(unsigned long currentMillis); // Метод для индикации времени нажатия
-    void handleShortPress(); // Метод для обработки короткого нажатия
-    void handleMediumPress(); // Метод для обработки среднего нажатия
-    void handleLongPress(); // Метод для обработки длинного нажатия
-    void indicateStartOfClearing(); // Метод для индикации начала очистки EEPROM
-    void indicateClearingCompleted(); // Метод для индикации завершения очистки EEPROM
-    void resetDevice(); // Метод для перезагрузки устройства
+    void indicatePressDuration(uint32_t currentMillis);
+    void handleShortPress();
+    void handleMediumPress();
+    void handleLongPress();
+    void indicateStartOfClearing();
+    void indicateClearingCompleted();
+    void resetDevice();
 };
 
 #endif // BUTTONHANDLER_H
