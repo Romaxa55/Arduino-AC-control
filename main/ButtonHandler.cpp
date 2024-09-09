@@ -110,15 +110,29 @@ void ButtonHandler::handleMediumPress() {
 
 void ButtonHandler::handleLongPress() {
 #ifdef DEBUG
-    Serial.println("Handling long press: cycling through LEDs.");
+    Serial.println("Handling long press: clearing EEPROM and cycling through LEDs.");
 #endif
+
+    indicateStartOfClearing();
+    eepromHandler.clearEEPROM();
+    indicateClearingCompleted();
+
+    resetDevice();
+}
+
+// Метод для индикации начала очистки
+void ButtonHandler::indicateStartOfClearing() {
     rgbLed.red();
-    delay(500);
-    rgbLed.green();
-    delay(500);
+}
+
+// Метод для индикации завершения очистки
+void ButtonHandler::indicateClearingCompleted() {
     rgbLed.blue();
-    delay(500);
-    resetDevice(); // Перезагрузка устройства
+    delay(1000);
+    rgbLed.white();
+    delay(3000);
+    rgbLed.off();
+    delay(300);
 }
 
 void ButtonHandler::resetDevice() {

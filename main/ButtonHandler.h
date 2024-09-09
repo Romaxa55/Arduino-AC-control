@@ -21,7 +21,9 @@ private:
     void handleShortPress(); // Метод для обработки короткого нажатия
     void handleMediumPress(); // Метод для обработки среднего нажатия
     void handleLongPress(); // Метод для обработки длинного нажатия
-    void resetDevice(); // Приватный метод для перезагрузки устройства
+    void indicateStartOfClearing(); // Метод для индикации начала очистки EEPROM
+    void indicateClearingCompleted(); // Метод для индикации завершения очистки EEPROM
+    void resetDevice(); // Метод для перезагрузки устройства
 };
 
 #endif // BUTTONHANDLER_H
