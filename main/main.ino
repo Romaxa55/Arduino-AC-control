@@ -34,7 +34,7 @@ void setup() {
     }
 
     // Проверяем память
-    eepromHandler.printEEPROM();
+    // eepromHandler.printEEPROM();
 
     delay(200);  // Задержка для завершения инициализации
 }
@@ -42,7 +42,7 @@ void setup() {
 void loop() {
     button.update(); // Обновляем состояние кнопки и выполняем действия
     dhtReader.run(); // Запускаем процесс опроса датчика
-
+    
     // Отслеживаем и выводим свободную память
     Serial.print("Free memory: ");
     Serial.println(freeMemory());

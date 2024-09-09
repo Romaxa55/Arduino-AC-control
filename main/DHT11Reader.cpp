@@ -1,38 +1,43 @@
 #include "DHT11Reader.h"
 #include "config.h"
-#include <avr/wdt.h> // Подключаем библиотеку для работы с Watchdog Timer
-
+#include <avr/wdt.h>
 
 DHT11Reader::DHT11Reader(uint8_t dataPin, uint8_t powerPin)
-        : dht11(dataPin), temperature(0), humidity(0), powerPin(powerPin), sensorAvailable(false), lastReadTime(0) {
+: dht11(dataPin), temperature(0), humidity(0), powerPin(powerPin), lastReadTime(0) {
     pinMode(powerPin, OUTPUT);
-    digitalWrite(powerPin, LOW); // Отключаем питание датчика при инициализации
+    digitalWrite(powerPin, LOW);
+    flags.sensorAvailable = false; // Устанавливаем флаг
 }
 
 void DHT11Reader::initialize() {
-    Serial.println("Initializing DHT11 sensor...");
+    Serial.println(F("Initializing DHT11 sensor..."));
     powerOn();
     delay(200);
 
     if (readData()) {
-        sensorAvailable = true;
-        Serial.println("DHT11 sensor initialized successfully.");
+        flags.sensorAvailable = true;
+        Serial.println(F("DHT11 sensor initialized successfully."));
     } else {
-        sensorAvailable = false;
-        Serial.println("DHT11 sensor is not available at startup.");
+        flags.sensorAvailable = false;
+        Serial.println(F("DHT11 sensor is not available at startup."));
     }
     powerOff();
 }
 
-// Новый метод для запуска процесса опроса
 void DHT11Reader::run() {
-    // Просто вызываем update() для проверки и опроса
-    update();
+    unsigned long currentMillis = millis();
+    if (currentMillis - lastReadTime >= readInterval) {
+        lastReadTime = currentMillis;
+        Serial.println(F("Reading data from DHT11..."));
+        if (flags.sensorAvailable && !readData()) {
+            Serial.println(F("Error reading data from DHT11."));
+        }
+    }
 }
 
 void DHT11Reader::powerOn() {
     digitalWrite(powerPin, HIGH);
-    delay(200); // Ждем 200 мс для стабилизации датчика
+    delay(200);
 }
 
 void DHT11Reader::powerOff() {
@@ -41,46 +46,28 @@ void DHT11Reader::powerOff() {
 
 bool DHT11Reader::readData() {
     powerOn();
-    delay(2000); // Ждем 2 секунды для стабилизации перед чтением
+    delay(2000);
 
-    int result = dht11.readTemperatureHumidity(temperature, humidity);
+    int temp, hum; // Создаем временные переменные типа int для хранения данных
+
+    int result = dht11.readTemperatureHumidity(temp, hum); // Используем переменные правильного типа
     powerOff();
 
     if (result != 0) {
-        Serial.println("Failed to read from DHT11 sensor.");
+        Serial.println(F("Failed to read from DHT11 sensor."));
         return false;
     }
 
-    temperature -= 5;
+    temperature = static_cast<int8_t>(temp - 5); // Коррекция температуры и приведение к типу int8_t
+    humidity = static_cast<uint8_t>(hum); // Приведение к типу uint8_t
 
-    Serial.print("Temperature (corrected): ");
+    Serial.print(F("Temperature (corrected): "));
     Serial.print(temperature);
-    Serial.print(" °C, Humidity: ");
+    Serial.print(F(" °C, Humidity: "));
     Serial.print(humidity);
-    Serial.println(" %");
+    Serial.println(F(" %"));
 
     return true;
-}
-
-void DHT11Reader::update() {
-    unsigned long currentMillis = millis();
-    if (currentMillis - lastReadTime >= readInterval) { // Проверяем, прошло ли время для нового чтения
-        lastReadTime = currentMillis; // Обновляем время последнего чтения
-        Serial.println("Reading data from DHT11...");
-        readAndPrintData();
-    }
-}
-
-void DHT11Reader::readAndPrintData() {
-    if (!sensorAvailable) {
-        Serial.println("Skipping data read; sensor is not available.");
-        return;
-    }
-
-    Serial.println("Reading data from DHT11...");
-    if (!readData()) {
-        Serial.println("Error reading data from DHT11.");
-    }
 }
 
 void DHT11Reader::disableModules() {
@@ -101,14 +88,6 @@ int DHT11Reader::getHumidity() const {
     return humidity;
 }
 
-void DHT11Reader::setTemperature(int temp) {
-    temperature = temp;
-}
-
-void DHT11Reader::setHumidity(int hum) {
-    humidity = hum;
-}
-
-bool DHT11Reader::isSensorAvailable() {
-    return sensorAvailable;
+bool DHT11Reader::isSensorAvailable() const {
+    return flags.sensorAvailable;
 }

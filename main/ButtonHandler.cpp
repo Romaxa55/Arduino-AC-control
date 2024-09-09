@@ -9,8 +9,8 @@ const uint16_t LONG_PRESS_DURATION = 30000;   // Длинное нажатие -
 
 // Конструктор класса ButtonHandler
 ButtonHandler::ButtonHandler(uint8_t pin)
-        : buttonPin(pin), buttonPressTime(0), buttonPressed(false), actionTriggered(false),
-          lastDebounceTime(0), debounceDelay(50) {
+: buttonPin(pin), buttonPressTime(0), buttonPressed(false), actionTriggered(false),
+lastDebounceTime(0), debounceDelay(50) {
     pinMode(buttonPin, INPUT_PULLUP); // Настройка пина кнопки как вход с подтяжкой к питанию
 }
 
@@ -37,25 +37,25 @@ void ButtonHandler::update() {
 
 // Метод для индикации текущего состояния нажатия кнопки
 void ButtonHandler::indicatePressDuration(uint32_t currentMillis) {
-    uint32_t pressDuration = currentMillis - buttonPressTime; // Определяем длительность нажатия
+uint32_t pressDuration = currentMillis - buttonPressTime; // Определяем длительность нажатия
 
-    if (pressDuration < SHORT_PRESS_DURATION) {
-        // Включаем зеленый светодиод, выключаем остальные
-        rgbLed.turnOnColor("green");
-        rgbLed.turnOffColor("blue");
-        rgbLed.turnOffColor("red");
-    } else if (pressDuration < MEDIUM_PRESS_DURATION) {
-        // Включаем синий светодиод, выключаем остальные
-        rgbLed.turnOffColor("green");
-        rgbLed.turnOnColor("blue");
-        rgbLed.turnOffColor("red");
-    } else {
-        // Включаем красный светодиод, выключаем остальные
-        rgbLed.turnOffColor("green");
-        rgbLed.turnOffColor("blue");
-        rgbLed.turnOnColor("red");
-        handleLongPress(); // Сразу выполняем действие для долгого нажатия
-    }
+if (pressDuration < SHORT_PRESS_DURATION) {
+// Включаем зеленый светодиод, выключаем остальные
+rgbLed.turnOnColor("green");
+rgbLed.turnOffColor("blue");
+rgbLed.turnOffColor("red");
+} else if (pressDuration < MEDIUM_PRESS_DURATION) {
+// Включаем синий светодиод, выключаем остальные
+rgbLed.turnOffColor("green");
+rgbLed.turnOnColor("blue");
+rgbLed.turnOffColor("red");
+} else {
+// Включаем красный светодиод, выключаем остальные
+rgbLed.turnOffColor("green");
+rgbLed.turnOffColor("blue");
+rgbLed.turnOnColor("red");
+handleLongPress(); // Сразу выполняем действие для долгого нажатия
+}
 }
 
 // Метод для обработки короткого нажатия кнопки
@@ -73,6 +73,8 @@ void ButtonHandler::handleMediumPress() {
 // Метод для обработки долгого нажатия кнопки
 void ButtonHandler::handleLongPress() {
     logDebug(F("Handling long press: clearing EEPROM and simulating flashing process."));
+
+    // Оставляем красный светодиод включенным, не выключаем его
 
     eepromHandler.clearEEPROM(); // Очищаем EEPROM
 
@@ -133,15 +135,14 @@ void ButtonHandler::logDebug(const __FlashStringHelper* message) {
 
 // Вспомогательная функция для определения действия при отпускании кнопки
 void ButtonHandler::processButtonRelease(uint32_t pressDuration) {
-    if (pressDuration < SHORT_PRESS_DURATION && !actionTriggered) {
-        logDebug(F("Short press detected."));
-        handleShortPress();
-    } else if (pressDuration < MEDIUM_PRESS_DURATION && !actionTriggered) {
-        logDebug(F("Medium press detected."));
-        handleMediumPress();
-    } else if (pressDuration >= MEDIUM_PRESS_DURATION && !actionTriggered) {
-        logDebug(F("Long press detected."));
-        // Убираем вызов handleLongPress(), так как он вызывается в indicatePressDuration()
-    }
-    actionTriggered = true; // Отмечаем, что действие выполнено
+if (pressDuration < SHORT_PRESS_DURATION && !actionTriggered) {
+logDebug(F("Short press detected."));
+handleShortPress();
+} else if (pressDuration < MEDIUM_PRESS_DURATION && !actionTriggered) {
+logDebug(F("Medium press detected."));
+handleMediumPress();
+} else if (pressDuration >= MEDIUM_PRESS_DURATION && !actionTriggered) {
+logDebug(F("Long press detected."));
+}
+actionTriggered = true; // Отмечаем, что действие выполнено
 }

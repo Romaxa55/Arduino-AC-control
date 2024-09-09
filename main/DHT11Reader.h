@@ -2,42 +2,40 @@
 #define DHT11READER_H
 
 #include <Arduino.h>
-#include <DHT11.h>  // Используем библиотеку для работы с DHT11
+#include <DHT11.h>
 #include <avr/sleep.h>
 #include <avr/power.h>
-#include <avr/wdt.h>  // Подключаем библиотеку для работы с Watchdog Timer
+#include <avr/wdt.h>
 
 class DHT11Reader {
 public:
-    DHT11Reader(uint8_t dataPin, uint8_t powerPin); // Конструктор с инициализацией пинов
-    void initialize(); // Метод для инициализации датчика
-    void run(); // Метод для запуска процесса опроса датчика
-    void readAndPrintData(); // Метод для чтения данных и вывода их в Serial
-    void disableModules(); // Метод для отключения неиспользуемых модулей
-    bool isSensorAvailable(); // Метод для проверки доступности датчика
-    bool sensorAvailable; // Публичная переменная для хранения состояния датчика
+    DHT11Reader(uint8_t dataPin, uint8_t powerPin);
+    void initialize();
+    void run();
+    void disableModules();
+    bool isSensorAvailable() const;
 
-    // Геттеры для получения температуры и влажности
     int getTemperature() const;
     int getHumidity() const;
 
-    // Сеттеры для установки температуры и влажности
-    void setTemperature(int temp);
-    void setHumidity(int hum);
-
 private:
-    DHT11 dht11;  // Объект библиотеки DHT11 для работы с датчиком
-    int temperature; // Переменная для хранения температуры
-    int humidity; // Переменная для хранения влажности
-    uint8_t powerPin; // Пин управления питанием датчика
+    DHT11 dht11;
+    int8_t temperature; // Используем int8_t, так как значения температуры обычно лежат в пределах -128..127
+    uint8_t humidity;   // Используем uint8_t, так как значения влажности лежат в пределах 0..100
+    uint8_t powerPin;
 
-    unsigned long lastReadTime; // Время последнего чтения данных
-    const unsigned long readInterval = 60000; // Интервал опроса датчика в миллисекундах
+    // Используем битовые поля для экономии памяти
+    struct {
+        bool sensorAvailable : 1; // Переменная состояния датчика
+        unsigned int unused : 7;  // Заполняем оставшиеся биты до целого байта (необязательно)
+    } flags;
 
-    void powerOn(); // Метод для включения питания датчика
-    void powerOff(); // Метод для отключения питания датчика
-    bool readData(); // Приватный метод для чтения данных с датчика
-    void update(); // Метод для неблокирующего опроса
+    unsigned long lastReadTime;
+    static constexpr unsigned long readInterval = 10000;
+
+    void powerOn();
+    void powerOff();
+    bool readData();
 };
 
 #endif // DHT11READER_H
