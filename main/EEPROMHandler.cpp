@@ -36,3 +36,11 @@ void EEPROMHandler::printEEPROM() {
     }
     Serial.println();
 }
+
+// Функция для очистки EEPROM
+void EEPROMHandler::clearEEPROM() {
+    for (int i = 0; i < EEPROM.length(); i++) {
+        EEPROM.write(i, 0xFF); // Записываем значение 0xFF, что соответствует очищенной ячейке памяти
+    }
+    Serial.println("EEPROM cleared.");
+}

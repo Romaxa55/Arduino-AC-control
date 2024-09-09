@@ -6,14 +6,15 @@
 
 class EEPROMHandler {
 public:
-    EEPROMHandler(int startAddress); // Конструктор
+    EEPROMHandler(int startAddress);
 
-    void saveSignal(uint16_t* signal, int length);  // Сохранение сигнала в EEPROM
-    void readSignal(uint16_t* buffer, int length);  // Чтение сигнала из EEPROM
-    void printEEPROM();                             // Вывод содержимого EEPROM в HEX формате
+    void saveSignal(uint16_t* signal, int length);
+    void readSignal(uint16_t* buffer, int length);
+    void printEEPROM();
+    void clearEEPROM(); // Метод для очистки EEPROM
 
 private:
-    int eepromAddress; // Начальный адрес в EEPROM
+    int eepromAddress; // Начальный адрес для хранения данных в EEPROM
 };
 
 #endif // EEPROMHANDLER_H
