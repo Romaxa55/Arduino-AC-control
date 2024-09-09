@@ -9,33 +9,31 @@
 
 class DHT11Reader {
 public:
-    DHT11Reader(uint8_t dataPin, uint8_t powerPin);
-    void initialize();
-    void run();
-    void disableModules();
-    bool isSensorAvailable() const;
+    DHT11Reader(uint8_t dataPin, uint8_t powerPin); // Конструктор класса
+    void initialize(); // Инициализация датчика
+    void run(); // Запуск процесса опроса
+    void disableModules(); // Отключение неиспользуемых модулей
+    bool isSensorAvailable() const; // Проверка доступности датчика
 
-    int getTemperature() const;
-    int getHumidity() const;
+    int getTemperature() const; // Геттер для температуры
+    int getHumidity() const;    // Геттер для влажности
 
 private:
-    DHT11 dht11;
-    int8_t temperature; // Используем int8_t, так как значения температуры обычно лежат в пределах -128..127
-    uint8_t humidity;   // Используем uint8_t, так как значения влажности лежат в пределах 0..100
-    uint8_t powerPin;
+    DHT11 dht11;               // Объект датчика DHT11
+    int8_t temperature;        // Температура, экономия памяти с использованием int8_t
+    uint8_t humidity;          // Влажность
 
-    // Используем битовые поля для экономии памяти
+    uint8_t powerPin;          // Пин управления питанием
+
     struct {
-        bool sensorAvailable : 1; // Переменная состояния датчика
-        unsigned int unused : 7;  // Заполняем оставшиеся биты до целого байта (необязательно)
+        bool sensorAvailable : 1; // Флаг доступности датчика (битовое поле)
     } flags;
 
-    unsigned long lastReadTime;
-    static constexpr unsigned long readInterval = 10000;
+    unsigned long lastReadTime; // Время последнего чтения
+    static constexpr unsigned long readInterval = 60000; // Интервал опроса
 
-    void powerOn();
-    void powerOff();
-    bool readData();
+    void managePower(bool on); // Управление питанием датчика
+    bool readData(); // Чтение данных с датчика
 };
 
 #endif // DHT11READER_H

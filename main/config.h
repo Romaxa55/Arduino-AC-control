@@ -3,12 +3,19 @@
 
 #define DEBUG  // Определяем макрос DEBUG для включения отладки
 
-// Подключаем только необходимые заголовочные файлы
-#include "RGBLed.h"
-#include "DHT11Reader.h"
-#include "ErrorIndicator.h"
-#include "ButtonHandler.h"
-#include "EEPROMHandler.h"
+// Макрос для отладочного вывода
+#ifdef DEBUG
+#define DEBUG_PRINT(x) Serial.println(x)
+#else
+#define DEBUG_PRINT(x)
+#endif
+
+// Подключаем необходимые заголовочные файлы
+#include "RGBLed.h"          // Управление RGB светодиодом
+#include "DHT11Reader.h"     // Управление датчиком DHT11
+#include "ErrorIndicator.h"  // Управление индикатором ошибок
+#include "ButtonHandler.h"   // Обработка нажатий кнопки
+#include "EEPROMHandler.h"   // Управление EEPROM
 
 // Определяем пины и константы с использованием constexpr для оптимизации памяти
 constexpr uint8_t LED_PIN = 13;          // Встроенный светодиод на плате Arduino
@@ -20,11 +27,11 @@ constexpr uint8_t RGB_BLUE_PIN = 6;      // Пин для синего цвет�
 constexpr uint8_t BUTTON_PIN = 7;        // Пин для кнопки
 constexpr uint16_t BOD = 9600;           // Скорость серийного порта
 
-// Объявляем внешние объекты
-extern DHT11Reader dhtReader;
-extern ErrorIndicator errorIndicator;
-extern RGBLed rgbLed;
-extern ButtonHandler button;
-extern EEPROMHandler eepromHandler;
+// Объявляем внешние объекты, которые будут использоваться в других модулях
+extern DHT11Reader dhtReader;           // Объект для работы с датчиком DHT11
+extern ErrorIndicator errorIndicator;   // Объект для управления индикатором ошибок
+extern RGBLed rgbLed;                   // Объект для управления RGB светодиодом
+extern ButtonHandler button;            // Объект для обработки нажатий кнопки
+extern EEPROMHandler eepromHandler;     // Объект для управления EEPROM
 
 #endif // CONFIG_H
