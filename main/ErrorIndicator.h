@@ -2,7 +2,6 @@
 #define ERRORINDICATOR_H
 
 #include <Arduino.h>
-#include "config.h"
 
 // Определение различных типов ошибок
 enum ErrorType {

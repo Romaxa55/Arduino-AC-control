@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include <DHT11.h>  // Используем библиотеку для работы с DHT11
-#include "config.h"
 #include <avr/sleep.h>
 #include <avr/power.h>
 #include <avr/wdt.h>  // Подключаем библиотеку для работы с Watchdog Timer

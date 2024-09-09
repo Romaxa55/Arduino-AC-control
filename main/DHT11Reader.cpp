@@ -1,4 +1,5 @@
 #include "DHT11Reader.h"
+#include "config.h"
 
 // Константа для времени сна в миллисекундах (здесь 8 секунд)
 const uint8_t SLEEP_DURATION = WDTO_8S; // Возможные значения: WDTO_15MS, WDTO_30MS, WDTO_60MS, WDTO_120MS, WDTO_250MS, WDTO_500MS, WDTO_1S, WDTO_2S, WDTO_4S, WDTO_8S

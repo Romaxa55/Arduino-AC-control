@@ -1,4 +1,5 @@
 #include "ErrorIndicator.h"
+#include "config.h" // Подключаем конфигурационный файл
 
 // Конструктор с инициализацией пина индикатора
 ErrorIndicator::ErrorIndicator(uint8_t ledPin) : ledPin(ledPin), currentError(NO_ERROR) {

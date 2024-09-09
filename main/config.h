@@ -8,9 +8,7 @@
 #include "RGBLed.h"         // Подключаем заголовок для RGB светодиода
 #include "DHT11Reader.h"    // Подключаем заголовок для работы с датчиком DHT11
 #include "ErrorIndicator.h" // Подключаем заголовок для индикатора ошибок
-
-// Объявляем объект arduino как внешнюю переменную
-extern CustomArduino arduino;
+#include "ButtonHandler.h"  // Подключаем заголовок для управления кнопкой
 
 // Определяем пины и константы
 #define LED_PIN 13           // Встроенный светодиод на плате Arduino
@@ -19,8 +17,14 @@ extern CustomArduino arduino;
 #define RGB_RED_PIN 4        // Пин для красного цвета RGB светодиода
 #define RGB_GREEN_PIN 5      // Пин для зеленого цвета RGB светодиода
 #define RGB_BLUE_PIN 6       // Пин для синего цвета RGB светодиода
+#define BUTTON_PIN 7         // Пин для кнопки
 #define BOD 9600             // Скорость серийного порта
 
-// Определения ошибок для индикатора ошибок (удалено, т.к. есть в ErrorIndicator.h)
+// Объявляем внешние объекты
+extern CustomArduino arduino;
+extern DHT11Reader dhtReader;
+extern ErrorIndicator errorIndicator;
+extern RGBLed rgbLed;
+extern ButtonHandler button;
 
 #endif // CONFIG_H

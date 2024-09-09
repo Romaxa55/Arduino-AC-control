@@ -1,11 +1,11 @@
 #include "config.h"
 
-
-CustomArduino arduino;  // Создаем объект Arduino
+// Определение глобальных объектов
+CustomArduino arduino;
 DHT11Reader dhtReader(DHT_DATA_PIN, DHT_POWER_PIN); // Создаем объект класса с указанием пинов
 ErrorIndicator errorIndicator(LED_PIN); // Создаем объект для управления ошибками
 RGBLed rgbLed(RGB_RED_PIN, RGB_GREEN_PIN, RGB_BLUE_PIN); // Создаем объект RGBLed с указанными пинами
-
+ButtonHandler button(BUTTON_PIN); // Создаем объект для управления кнопкой на указанном пине
 
 void setup() {
 #ifdef DEBUG
