@@ -30,15 +30,6 @@ void setup() {
 }
 
 void loop() {
-#ifdef DEBUG
-    Serial.println("Start app");
-#endif
-    dhtReader.readAndPrintData(); // Читаем и выводим данные с датчика
-
-#ifdef DEBUG
-    Serial.println("Going to sleep...");
-#endif
-    arduino.delay(200);  // Задержка перед сном
-
-    dhtReader.enterSleepMode();  // Переходим в режим сна (и затем произойдет сброс)
+    button.update(); // Обновляем состояние кнопки и выполняем действия
+    dhtReader.run(); // Запускаем процесс опроса датчика
 }
