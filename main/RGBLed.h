@@ -4,20 +4,23 @@
 #include <Arduino.h>
 
 class RGBLed {
-private:
-    int redPin;    // Пин для красного цвета
-    int greenPin;  // Пин для зеленого цвета
-    int bluePin;   // Пин для синего цвета
-
 public:
     RGBLed(int rPin, int gPin, int bPin); // Конструктор класса
 
-    void setColor(int redValue, int greenValue, int blueValue); // Метод для установки цвета
-    void red();   // Метод для включения красного цвета
-    void green(); // Метод для включения зеленого цвета
-    void blue();  // Метод для включения синего цвета
-    void white(); // Метод для включения белого цвета
-    void off();   // Метод для выключения светодиода
+    void setColor(int redValue, int greenValue, int blueValue); // Установка цвета
+    void off(); // Выключение всех светодиодов
+    void turnOnColor(const char* color); // Включение заданного цвета
+    void turnOffColor(const char* color); // Выключение заданного цвета
+
+private:
+    int redPin;
+    int greenPin;
+    int bluePin;
+    bool redState;   // Состояние красного светодиода
+    bool greenState; // Состояние зеленого светодиода
+    bool blueState;  // Состояние синего светодиода
+
+    void updateLED(); // Приватный метод для обновления состояния светодиода
 };
 
 #endif // RGBLED_H

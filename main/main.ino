@@ -30,9 +30,9 @@ void setup() {
     // Проверка доступности датчика
     if (!dhtReader.isSensorAvailable()) {
         errorIndicator.setError(SENSOR_ERROR); // Устанавливаем ошибку датчика, если он недоступен
-        rgbLed.red(); // Включаем красный цвет на RGB светодиоде, если ошибка
-    } 
-    
+        rgbLed.turnOnColor("red"); // Включаем красный цвет на RGB светодиоде, если ошибка
+    }
+
     // Проверяем память
     eepromHandler.printEEPROM();
 
