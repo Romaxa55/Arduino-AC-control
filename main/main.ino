@@ -26,6 +26,10 @@ void setup() {
         errorIndicator.setError(SENSOR_ERROR); // Устанавливаем ошибку датчика, если он недоступен
         rgbLed.red(); // Включаем красный цвет на RGB светодиоде, если ошибка
     } 
+    
+    // Проверяем память
+    eepromHandler.printEEPROM();
+
     arduino.delay(200);  // Задержка для завершения инициализации
 }
 

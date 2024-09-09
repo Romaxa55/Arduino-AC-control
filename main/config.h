@@ -9,6 +9,7 @@
 #include "DHT11Reader.h"    // Подключаем заголовок для работы с датчиком DHT11
 #include "ErrorIndicator.h" // Подключаем заголовок для индикатора ошибок
 #include "ButtonHandler.h"  // Подключаем заголовок для управления кнопкой
+#include "EEPROMHandler.h"
 
 // Определяем пины и константы
 #define LED_PIN 13           // Встроенный светодиод на плате Arduino
@@ -26,5 +27,6 @@ extern DHT11Reader dhtReader;
 extern ErrorIndicator errorIndicator;
 extern RGBLed rgbLed;
 extern ButtonHandler button;
+extern EEPROMHandler eepromHandler;
 
 #endif // CONFIG_H
