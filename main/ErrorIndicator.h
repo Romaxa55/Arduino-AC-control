@@ -14,7 +14,7 @@ enum ErrorType {
 class ErrorIndicator {
 public:
     // Конструктор с указанием пина для индикатора
-    ErrorIndicator(uint8_t ledPin);
+    ErrorIndicator(const uint8_t ledPin);
 
     // Установка типа ошибки
     void setError(ErrorType errorType);
@@ -29,7 +29,7 @@ public:
     void blinkSleepError();
 
 private:
-    uint8_t ledPin;        // Пин для управления светодиодом
+    const uint8_t ledPin;        // Пин для управления светодиодом
     ErrorType currentError; // Текущий тип ошибки
 };
 

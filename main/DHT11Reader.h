@@ -16,14 +16,14 @@ public:
 
     inline bool isSensorAvailable() const { return flags.sensorAvailable; } // Инлайн-метод для проверки доступности датчика
 
-    inline int getTemperature() const { return temperature; } // Инлайн-метод для получения температуры
-    inline int getHumidity() const { return humidity; } // Инлайн-метод для получения влажности
+    inline int8_t getTemperature() const { return temperature; } // Инлайн-метод для получения температуры
+    inline uint8_t getHumidity() const { return humidity; } // Инлайн-метод для получения влажности
 
 private:
     DHT11 dht11; // Объект библиотеки DHT11 для работы с датчиком
-    int8_t temperature; // Температура, сохраненная как знаковое целое
+    int8_t temperature; // Температура, сохраненная как знаковое целое (экономия памяти)
     uint8_t humidity; // Влажность, сохраненная как беззнаковое целое
-    uint8_t powerPin; // Пин для управления питанием датчика
+    const uint8_t powerPin; // Пин для управления питанием датчика
     unsigned long lastReadTime; // Время последнего опроса датчика
     static constexpr unsigned long readInterval = 60000; // Интервал опроса датчика (миллисекунды)
 

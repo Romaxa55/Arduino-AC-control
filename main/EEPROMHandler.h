@@ -14,7 +14,8 @@ public:
     void clearEEPROM();
 
 private:
-    uint8_t eepromAddress; // Адрес EEPROM для хранения данных
+    uint8_t eepromAddress; // Начальный адрес EEPROM для хранения данных
+    static constexpr uint16_t MAX_EEPROM_SIZE = 200; // Ограничение размера до 200 байт
 
     // Вспомогательные функции для сдвигов
     inline uint8_t getLowByte(uint16_t value) const { return value & 0xFF; } // Возвращаем младший байт

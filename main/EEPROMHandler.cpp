@@ -6,6 +6,8 @@ EEPROMHandler::EEPROMHandler(uint8_t startAddress) : eepromAddress(startAddress)
 
 // Функция для сохранения сигнала в EEPROM с использованием битовых сдвигов
 void EEPROMHandler::saveSignal(const uint16_t* signal, uint8_t length) {
+    if (length > MAX_EEPROM_SIZE / 2) length = MAX_EEPROM_SIZE / 2; // Ограничиваем длину до 100 импульсов (200 байт)
+
     for (uint8_t i = 0; i < length; ++i) {
         uint8_t lowByte = getLowByte(signal[i]);   // Младший байт
         uint8_t highByte = getHighByte(signal[i]); // Старший байт
@@ -18,6 +20,8 @@ void EEPROMHandler::saveSignal(const uint16_t* signal, uint8_t length) {
 
 // Функция для чтения сигнала из EEPROM с использованием битовых сдвигов
 void EEPROMHandler::readSignal(uint16_t* buffer, uint8_t length) {
+if (length > MAX_EEPROM_SIZE / 2) length = MAX_EEPROM_SIZE / 2; // Ограничиваем длину до 100 импульсов (200 байт)
+
 for (uint8_t i = 0; i < length; ++i) {
 uint8_t lowByte = EEPROM.read(eepromAddress + (i << 1));         // Читаем младший байт
 uint8_t highByte = EEPROM.read(eepromAddress + (i << 1) + 1);    // Читаем старший байт
@@ -31,7 +35,7 @@ buffer[i] = (static_cast<uint16_t>(highByte) << 8) | lowByte;
 void EEPROMHandler::printEEPROM() const {
     Serial.println(F("EEPROM Content:"));
 
-    const uint16_t eepromSize = EEPROM.length(); // Максимальная длина EEPROM
+    const uint16_t eepromSize = MAX_EEPROM_SIZE; // Используем максимальный размер 200 байт
     const uint8_t bytesPerLine = 16;  // Количество байт на строку для вывода
 
     for (uint16_t i = 0; i < eepromSize; ++i) {
@@ -50,7 +54,9 @@ void EEPROMHandler::printEEPROM() const {
 
 // Оптимизированная функция очистки EEPROM
 void EEPROMHandler::clearEEPROM() {
-    for (uint16_t i = 0; i < EEPROM.length(); ++i) {
+    const uint16_t eepromSize = MAX_EEPROM_SIZE; // Используем максимальный размер 200 байт
+
+    for (uint16_t i = 0; i < eepromSize; ++i) {
         EEPROM.update(i, 0xFF); // Используем EEPROM.update() для уменьшения износа памяти
     }
     Serial.println(F("EEPROM cleared."));

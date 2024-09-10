@@ -5,17 +5,17 @@
 
 class RGBLed {
 public:
-    RGBLed(int rPin, int gPin, int bPin); // Конструктор класса
+    RGBLed(uint8_t rPin, uint8_t gPin, uint8_t bPin); // Конструктор класса с меньшими типами данных
 
-    void setColor(int redValue, int greenValue, int blueValue); // Установка цвета
+    void setColor(uint8_t redValue, uint8_t greenValue, uint8_t blueValue); // Установка цвета с меньшими типами данных
     void off(); // Выключение всех светодиодов
     void turnOnColor(const char* color); // Включение заданного цвета
     void turnOffColor(const char* color); // Выключение заданного цвета
 
 private:
-    int redPin;
-    int greenPin;
-    int bluePin;
+    const uint8_t redPin;   // Используем uint8_t для пинов
+    const uint8_t greenPin;
+    const uint8_t bluePin;
     bool redState;   // Состояние красного светодиода
     bool greenState; // Состояние зеленого светодиода
     bool blueState;  // Состояние синего светодиода
