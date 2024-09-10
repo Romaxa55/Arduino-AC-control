@@ -37,25 +37,25 @@ void ButtonHandler::update() {
 
 // Метод для индикации текущего состояния нажатия кнопки
 void ButtonHandler::indicatePressDuration(uint32_t currentMillis) {
-uint32_t pressDuration = currentMillis - buttonPressTime; // Определяем длительность нажатия
+    uint32_t pressDuration = currentMillis - buttonPressTime; // Определяем длительность нажатия
 
-if (pressDuration < SHORT_PRESS_DURATION) {
-// Включаем зеленый светодиод, выключаем остальные
-rgbLed.turnOnColor("green");
-rgbLed.turnOffColor("blue");
-rgbLed.turnOffColor("red");
-} else if (pressDuration < MEDIUM_PRESS_DURATION) {
-// Включаем синий светодиод, выключаем остальные
-rgbLed.turnOffColor("green");
-rgbLed.turnOnColor("blue");
-rgbLed.turnOffColor("red");
-} else {
-// Включаем красный светодиод, выключаем остальные
-rgbLed.turnOffColor("green");
-rgbLed.turnOffColor("blue");
-rgbLed.turnOnColor("red");
-handleLongPress(); // Сразу выполняем действие для долгого нажатия
-}
+    if (pressDuration < SHORT_PRESS_DURATION) {
+        // Включаем зеленый светодиод, выключаем остальные
+        rgbLed.turnOnColor("green");
+        rgbLed.turnOffColor("blue");
+        rgbLed.turnOffColor("red");
+    } else if (pressDuration < MEDIUM_PRESS_DURATION) {
+        // Включаем синий светодиод, выключаем остальные
+        rgbLed.turnOffColor("green");
+        rgbLed.turnOnColor("blue");
+        rgbLed.turnOffColor("red");
+    } else {
+        // Включаем красный светодиод, выключаем остальные
+        rgbLed.turnOffColor("green");
+        rgbLed.turnOffColor("blue");
+        rgbLed.turnOnColor("red");
+        handleLongPress(); // Сразу выполняем действие для долгого нажатия
+    }
 }
 
 // Метод для обработки короткого нажатия кнопки
@@ -95,17 +95,20 @@ void ButtonHandler::resetDevice() {
 void ButtonHandler::switchColor(const char* color, uint16_t duration) {
     rgbLed.off(); // Выключаем все светодиоды
     rgbLed.turnOnColor(color); // Включаем светодиод указанного цвета
-    if (duration > 0) delay(duration); // Если задана длительность, ждем указанное время
+    if (duration > 0) delayFunc(duration); // Если задана длительность, ждем указанное время
     rgbLed.off(); // Выключаем светодиоды после указанного времени
 }
 
 // Вспомогательная функция для мигания светодиодом указанного цвета
-void ButtonHandler::toggleLed(const char* color, uint16_t interval, uint16_t duration) {
+void ButtonHandler::toggleLed(const char* color, uint16_t interval, uint32_t duration) {
     uint32_t startMillis = millis();
+    uint32_t previousMillis = startMillis;
     bool ledOn = false;
 
     while (millis() - startMillis < duration) { // Пока длительность не превышена
-        if (millis() % interval == 0) { // Каждые 'interval' миллисекунд
+        uint32_t currentMillis = millis();
+        if (currentMillis - previousMillis >= interval) { // Прошло достаточно времени для переключения
+            previousMillis = currentMillis;
             ledOn = !ledOn;
             ledOn ? rgbLed.turnOnColor(color) : rgbLed.turnOffColor(color); // Переключаем светодиод
         }
@@ -115,13 +118,13 @@ void ButtonHandler::toggleLed(const char* color, uint16_t interval, uint16_t dur
 }
 
 // Вспомогательная функция для быстрого мигания светодиодом (эффект "прошивки")
-void ButtonHandler::flashLed(const char* color, uint16_t interval, uint16_t duration) {
+void ButtonHandler::flashLed(const char* color, uint16_t interval, uint32_t duration) {
     uint32_t startMillis = millis();
     while (millis() - startMillis < duration) { // Пока длительность не превышена
         rgbLed.turnOnColor(color);
-        delay(interval); // Включаем светодиод на короткое время
+        delayFunc(interval); // Включаем светодиод на короткое время
         rgbLed.turnOffColor(color);
-        delay(interval); // Выключаем светодиод на короткое время
+        delayFunc(interval); // Выключаем светодиод на короткое время
     }
     rgbLed.off();
 }
@@ -135,14 +138,15 @@ void ButtonHandler::logDebug(const __FlashStringHelper* message) {
 
 // Вспомогательная функция для определения действия при отпускании кнопки
 void ButtonHandler::processButtonRelease(uint32_t pressDuration) {
-if (pressDuration < SHORT_PRESS_DURATION && !actionTriggered) {
-logDebug(F("Short press detected."));
-handleShortPress();
-} else if (pressDuration < MEDIUM_PRESS_DURATION && !actionTriggered) {
-logDebug(F("Medium press detected."));
-handleMediumPress();
-} else if (pressDuration >= MEDIUM_PRESS_DURATION && !actionTriggered) {
-logDebug(F("Long press detected."));
-}
-actionTriggered = true; // Отмечаем, что действие выполнено
+    if (pressDuration < SHORT_PRESS_DURATION && !actionTriggered) {
+        logDebug(F("Short press detected."));
+        handleShortPress();
+    } else if (pressDuration < MEDIUM_PRESS_DURATION && !actionTriggered) {
+        logDebug(F("Medium press detected."));
+        handleMediumPress();
+    } else if (pressDuration >= MEDIUM_PRESS_DURATION && !actionTriggered) {
+        logDebug(F("Long press detected."));
+        handleLongPress();
+    }
+    actionTriggered = true; // Отмечаем, что действие выполнено
 }

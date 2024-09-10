@@ -12,7 +12,7 @@ DHT11Reader::DHT11Reader(uint8_t dataPin, uint8_t powerPin)
 void DHT11Reader::initialize() {
     DEBUG_PRINT(F("Initializing DHT11 sensor..."));
     managePower(true); // Включаем питание датчика
-    delay(200); // Ждем стабилизации
+    delayFunc(200); // Ждем стабилизации
 
     if (readData()) {
         flags.sensorAvailable = true;

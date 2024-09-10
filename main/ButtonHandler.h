@@ -18,7 +18,7 @@ private:
     bool actionTriggered;         // Флаг выполнения действия (короткое, среднее или долгое нажатие)
 
     uint32_t lastDebounceTime;    // Время последнего изменения состояния кнопки
-    uint8_t debounceDelay;        // Задержка для устранения дребезга кнопки
+    const uint16_t debounceDelay;        // Задержка для устранения дребезга кнопки
 
     // Метод для индикации текущего состояния нажатия кнопки
     void indicatePressDuration(uint32_t currentMillis);
@@ -33,8 +33,8 @@ private:
 
     // Вспомогательные методы для управления светодиодами
     void switchColor(const char* color, uint16_t duration = 0); // Переключение цвета светодиода
-    void toggleLed(const char* color, uint16_t interval, uint16_t duration); // Мигание светодиодом
-    void flashLed(const char* color, uint16_t interval, uint16_t duration);  // Быстрое мигание светодиодом (эффект "прошивки")
+    void toggleLed(const char* color, uint16_t interval, uint32_t duration); // Мигание светодиодом
+    void flashLed(const char* color, uint16_t interval, uint32_t duration);  // Быстрое мигание светодиодом (эффект "прошивки")
 
     // Вспомогательная функция для логирования отладочных сообщений
     void logDebug(const __FlashStringHelper* message);
