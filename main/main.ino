@@ -7,40 +7,24 @@ ErrorIndicator errorIndicator(LED_PIN);
 RGBLed rgbLed(RGB_RED_PIN, RGB_GREEN_PIN, RGB_BLUE_PIN);
 ButtonHandler button(BUTTON_PIN);
 IRrecv irReceiver(IR_RECEIVE_PIN);
+EEPROMHandler eepromHandler(0); // Начинаем запись с адреса 0
 
-// Функция для обработки ИК сигналов
 void handleIRSignals(IRrecv& irReceiver) {
     if (irReceiver.decode()) {
-        Serial.println(F("\n\n"));  // Пустые строки
+        IRRawbufType* rawData = irReceiver.decodedIRData.rawDataPtr->rawbuf;
+        uint8_t rawDataLen = irReceiver.decodedIRData.rawlen;
 
-        irReceiver.printIRResultShort(&Serial);
-
-        // Проверка переполнения буфера
-        if (irReceiver.decodedIRData.flags & IRDATA_FLAGS_WAS_OVERFLOW) {
-            Serial.println(F("Попробуйте увеличить значение \"RAW_BUFFER_LENGTH\" в " __FILE__));
-        } else {
-            if (irReceiver.decodedIRData.protocol == UNKNOWN) {
-                Serial.println(F("Получен шум или неизвестный протокол"));
-            }
-            Serial.println();
-            irReceiver.printIRSendUsage(&Serial);
-            Serial.println();
-            Serial.println(F("Результат в тиках (50 мкс) - с ведущим промежутком"));
-            irReceiver.printIRResultRawFormatted(&Serial, false);
-            Serial.println(F("Результат в микросекундах - с ведущим промежутком"));
-            irReceiver.printIRResultRawFormatted(&Serial, true);
-            Serial.println();
-            Serial.print(F("Результат в 8-битных тиках - с компенсацией MARK_EXCESS_MICROS="));
-            Serial.println(MARK_EXCESS_MICROS);
-            irReceiver.compensateAndPrintIRResultAsCArray(&Serial, false);
-            Serial.print(F("Результат в массиве микросекунд - с компенсацией MARK_EXCESS_MICROS="));
-            Serial.println(MARK_EXCESS_MICROS);
-            irReceiver.compensateAndPrintIRResultAsCArray(&Serial, true);
-            irReceiver.printIRResultAsCVariables(&Serial);
-            Serial.println();
-            irReceiver.compensateAndPrintIRResultAsPronto(&Serial);
+        // Преобразование сырых данных в массив uint8_t
+        uint8_t signalData[rawDataLen];
+        for (uint8_t i = 0; i < rawDataLen; i++) {
+            signalData[i] = static_cast<uint8_t>(rawData[i]); // Преобразуем в uint8_t
         }
-        irReceiver.resume();  // Готовим к следующему ИК кадру
+
+        // Запись сигнала в EEPROM
+        eepromHandler.saveSignal(signalData, rawDataLen);
+
+        Serial.println("Данные сигнала записаны в EEPROM.");
+        irReceiver.resume();  // Готовим приемник к следующему сигналу
     }
 }
 
@@ -73,8 +57,8 @@ void loop() {
     button.update();
     dhtReader.run();
 
-#ifdef DEBUG
-    Serial.print(F("Free memory: "));
-    Serial.println(freeMemory());
-#endif
+// #ifdef DEBUG
+//     Serial.print(F("Free memory: "));
+//     Serial.println(freeMemory());
+// #endif
 }

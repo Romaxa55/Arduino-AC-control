@@ -4,31 +4,22 @@
 // Конструктор инициализации начального адреса для EEPROM
 EEPROMHandler::EEPROMHandler(uint8_t startAddress) : eepromAddress(startAddress) {}
 
-// Функция для сохранения сигнала в EEPROM с использованием битовых сдвигов
-void EEPROMHandler::saveSignal(const uint16_t* signal, uint8_t length) {
-    if (length > MAX_EEPROM_SIZE / 2) length = MAX_EEPROM_SIZE / 2; // Ограничиваем длину до 100 импульсов (200 байт)
+void EEPROMHandler::saveSignal(const uint8_t* signal, uint8_t length) {
+    if (length > MAX_EEPROM_SIZE) length = MAX_EEPROM_SIZE; // Ограничиваем длину до максимума
 
     for (uint8_t i = 0; i < length; ++i) {
-        uint8_t lowByte = getLowByte(signal[i]);   // Младший байт
-        uint8_t highByte = getHighByte(signal[i]); // Старший байт
-
-        // Используем EEPROM.update для минимизации износа памяти
-        EEPROM.update(eepromAddress + (i << 1), lowByte);       // i * 2 заменено на битовый сдвиг (i << 1)
-        EEPROM.update(eepromAddress + (i << 1) + 1, highByte);
+        EEPROM.update(eepromAddress + i, signal[i]); // Записываем каждый байт
     }
 }
 
 // Функция для чтения сигнала из EEPROM с использованием битовых сдвигов
-void EEPROMHandler::readSignal(uint16_t* buffer, uint8_t length) {
-if (length > MAX_EEPROM_SIZE / 2) length = MAX_EEPROM_SIZE / 2; // Ограничиваем длину до 100 импульсов (200 байт)
+void EEPROMHandler::readSignal(uint8_t* buffer, uint8_t length) {
+if (length > MAX_EEPROM_SIZE) length = MAX_EEPROM_SIZE; // Ограничиваем длину до максимума
 
-for (uint8_t i = 0; i < length; ++i) {
-uint8_t lowByte = EEPROM.read(eepromAddress + (i << 1));         // Читаем младший байт
-uint8_t highByte = EEPROM.read(eepromAddress + (i << 1) + 1);    // Читаем старший байт
+    for (uint8_t i = 0; i < length; ++i) {
 
-// Восстанавливаем 16-битное значение из двух байтов
-buffer[i] = (static_cast<uint16_t>(highByte) << 8) | lowByte;
-}
+        buffer[i] = EEPROM.read(eepromAddress + i);
+    }
 }
 
 // Оптимизированная функция вывода содержимого EEPROM в HEX формате
